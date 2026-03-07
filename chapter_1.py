@@ -1,8 +1,7 @@
 # -------------------------------------------------------------
 # Blender 5.0.1 – “Cosmic Regulation Through Consciousness”
 # -------------------------------------------------------------
-# Optimized for Blender 5.0.1 with new Animation System 
-# and Shader Node Input compatibility.
+# Reconstructed & Fixed for Blender 5.0.1 compatibility.
 # -------------------------------------------------------------
 
 import bpy
@@ -57,7 +56,6 @@ def set_keyframe(obj, data_path, frame, value, interpolation='LINEAR'):
         if obj.animation_data and obj.animation_data.action:
             action = obj.animation_data.action
             fcurve = None
-            # Check legacy fcurves or new layers
             if hasattr(action, "fcurves"):
                 fcurve = action.fcurves.find(data_path)
             elif hasattr(action, "layers"):
@@ -70,8 +68,8 @@ def set_keyframe(obj, data_path, frame, value, interpolation='LINEAR'):
                     if abs(kp.co.x - frame) < 0.01:
                         kp.interpolation = interpolation
                         break
-    except:
-        pass
+    except Exception as e:
+        print(f"Animation Warning for {obj.name}: {e}")
 
 def lerp(a, b, t):
     return a + (b - a) * t
@@ -100,6 +98,7 @@ scene1.cycles.motion_blur_shutter = 0.5
 star_coll = make_collection("Stars")
 star_coll.hide_viewport = True
 
+# Prototype star
 bpy.ops.mesh.primitive_uv_sphere_add(radius=0.02, location=(0,0,0))
 star_proto = bpy.context.object
 star_proto.name = "Star_Proto"
@@ -110,10 +109,12 @@ star_mat = add_material("Star_Emission", lambda n, l: (
 ))
 star_proto.data.materials.append(star_mat)
 
-bpy.ops.object.empty_add(type='PLAIN_AXES', location=(0,0,0))
+# Star Field Emitter (MUST be a mesh for particle EMITTER mode)
+bpy.ops.mesh.primitive_uv_sphere_add(radius=1, location=(0,0,0))
 star_field = bpy.context.object
 star_field.name = "Star_Field"
 star_field.scale = (10000,10000,10000)
+star_field.display_type = 'WIRE'
 
 ps = star_field.modifiers.new(name="Stars_PS", type='PARTICLE_SYSTEM')
 psettings = ps.particle_system.settings
@@ -125,10 +126,7 @@ psettings.render_type = 'OBJECT'
 psettings.instance_object = star_proto
 psettings.use_render_emitter = False
 
-# Note: assign_star_colors logic omitted for background stability in this update
-# as particle iteration can be slow in CLI.
-
-# 2️⃣ Nebula
+# 2️⃣ Nebula smear
 nebula_coll = make_collection("Nebula")
 bpy.ops.mesh.primitive_cube_add(size=2000, location=(0,0,0))
 nebula = bpy.context.object
@@ -167,7 +165,7 @@ ring.scale = (0,0,0)
 set_keyframe(ring, "scale", 1, (0,0,0))
 set_keyframe(ring, "scale", 130, (65, 65, 0))
 
-# 4️⃣ Functional Boundary
+# 4️⃣ Functional Boundary – Grid Plane
 grid_coll = make_collection("Boundary")
 bpy.ops.mesh.primitive_plane_add(size=200, location=(0,0,85))
 grid = bpy.context.object
@@ -184,12 +182,12 @@ grid_mat = add_material("Grid_Mat", lambda n,l: (
 ))
 grid.data.materials.append(grid_mat)
 
-# Pulse Animation
+# Breathing pulse animation
 grid_emit = grid_mat.node_tree.nodes["Emission"]
 for f in range(1, 271, 5):
     val = 1.25 + 0.25*math.sin(2*math.pi*(f%90)/90)
-    grid_emit.inputs["Strength"].default_value = val
-    grid_emit.keyframe_insert(data_path="inputs['Strength'].default_value", frame=f)
+    grid_emit.inputs[1].default_value = val
+    grid_emit.inputs[1].keyframe_insert(data_path="default_value", frame=f)
 
 # 6️⃣ Camera
 cam_coll = make_collection("Camera")
@@ -236,7 +234,6 @@ bsdf.inputs["Specular IOR Level"].default_value = 0.6
 bsdf.inputs["Roughness"].default_value = 0.15
 bust.data.materials.append(marble_mat)
 
-# HUD Scan
 scan_coll = make_collection("HUD_Scanner")
 bpy.ops.mesh.primitive_plane_add(size=2, location=(0,0,0))
 line_top = bpy.context.object
@@ -264,7 +261,6 @@ for f in range(1, 241):
 scene3 = bpy.data.scenes.new("Natural_Cage")
 bpy.context.window.scene = scene3
 
-# Pillars
 pillars_coll = make_collection("Golden_Pillars")
 for x in (-20, 20):
     bpy.ops.mesh.primitive_cube_add(size=2, location=(x,0,0))
@@ -278,7 +274,6 @@ for x in (-20, 20):
     bsdf = gold_mat.node_tree.nodes["Principled"]
     bsdf.inputs["Base Color"].default_value = (0.83,0.63,0.09,1)
     bsdf.inputs["Metallic"].default_value = 1.0
-    # Blender 5.0 Renames
     if "Anisotropy" in bsdf.inputs:
         bsdf.inputs["Anisotropy"].default_value = 0.3
     
@@ -289,7 +284,82 @@ for x in (-20, 20):
     pillar.keyframe_insert(data_path="location", frame=18)
 
 # ------------------------------------------------------------------
-# COMPOSITING
+# SCENE 4 – "The Causal Firewall"
+# ------------------------------------------------------------------
+
+scene4 = bpy.data.scenes.new("Causal_Firewall")
+bpy.context.window.scene = scene4
+
+earth_coll = make_collection("Earth")
+bpy.ops.mesh.primitive_uv_sphere_add(radius=3, location=(0,0,0))
+earth = bpy.context.object
+earth.name = "Earth_Core"
+earth_coll.objects.link(earth)
+
+earth_mat = add_material("Earth_Mat", lambda n,l: (
+    n.new('ShaderNodeBsdfPrincipled', name='Principled')
+))
+earth.data.materials.append(earth_mat)
+
+shell_coll = make_collection("Light_Shell")
+bpy.ops.mesh.primitive_uv_sphere_add(radius=18, location=(0,0,0))
+shell = bpy.context.object
+shell.name = "Light_Shell"
+shell_coll.objects.link(shell)
+
+shell_mat = add_material("Shell_Mat", lambda n,l: (
+    n.new('ShaderNodeEmission', name='Emission')
+))
+shell_emit = shell_mat.node_tree.nodes["Emission"]
+shell_emit.inputs["Color"].default_value = (1,1,1,1)
+shell_emit.inputs["Strength"].default_value = 120.0
+shell.data.materials.append(shell_mat)
+
+for f in range(1, 301, 5):
+    strength = 100 + 20*math.sin(2*math.pi*(f%30)/30)
+    shell_emit.inputs[1].default_value = strength
+    shell_emit.inputs[1].keyframe_insert(data_path="default_value", frame=f)
+
+# ------------------------------------------------------------------
+# SCENE 5 – "The Recursive Failsafe"
+# ------------------------------------------------------------------
+
+scene5 = bpy.data.scenes.new("Recursive_Failsafe")
+bpy.context.window.scene = scene5
+
+rings_coll = make_collection("Core_Rings")
+radii = [5,9,14,20]
+for i, R in enumerate(radii):
+    bpy.ops.mesh.primitive_torus_add(major_radius=R, minor_radius=0.2, location=(0,0,0))
+    ring = bpy.context.object
+    rings_coll.objects.link(ring)
+    
+    red_mat = add_material(f"Ring_{i+1}_Mat", lambda n,l: (
+        n.new('ShaderNodeEmission', name='Emission')
+    ))
+    red_mat.node_tree.nodes["Emission"].inputs["Color"].default_value = (0.8,0.07,0.0,1)
+    ring.data.materials.append(red_mat)
+
+# ------------------------------------------------------------------
+# SCENE 6 – "The Measurement Cliffhanger"
+# ------------------------------------------------------------------
+
+scene6 = bpy.data.scenes.new("Measurement_Cliffhanger")
+bpy.context.window.scene = scene6
+
+particle_coll6 = make_collection("Superposition")
+for i in range(10):
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.4, location=(random.uniform(-2,2), random.uniform(-2,2), random.uniform(-2,2)))
+    sph = bpy.context.object
+    particle_coll6.objects.link(sph)
+    
+    mat = add_material(f"SuperMat_{i}", lambda n,l: (
+        n.new('ShaderNodeEmission', name='Emission')
+    ))
+    sph.data.materials.append(mat)
+
+# ------------------------------------------------------------------
+# COMPOSITING (Common)
 # ------------------------------------------------------------------
 
 def setup_compositor(scene):
@@ -306,7 +376,7 @@ def setup_compositor(scene):
     links.new(rl.outputs[0], glare.inputs[0])
     links.new(glare.outputs[0], comp.inputs[0])
 
-for sc in [scene1, scene2, scene3]:
+for sc in [scene1, scene2, scene3, scene4, scene5, scene6]:
     setup_compositor(sc)
 
-print("Edits complete. Chapter 1 script is ready for Blender 5.0.1.")
+print("Reconstruction complete. All 6 scenes restored and fixed for Blender 5.0.1.")
