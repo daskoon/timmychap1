@@ -5,65 +5,41 @@ Automated production of a 6-episode YouTube series based on the thesis "Cosmic R
 
 ---
 
-## 1. Episode 1 (Chapter 1) - "The Echo Hook"
-**Status:** Planning Complete, Scripts Split & Fixed.
+## Phase 0: Pre-Flight Validation (CRITICAL)
+*Objective: Verify hardware stability and asset quality before starting long renders.*
 
-### Phase 1: Scene Construction (Blender 5.0.1)
-- [ ] Execute `scene1_echo_hook.py`
-- [ ] Execute `scene2_aristotle_glitch.py`
-- [ ] Execute `scene3_natural_cage.py`
-- [ ] Execute `scene4_causal_firewall.py`
-- [ ] Execute `scene5_recursive_failsafe.py`
-- [ ] Execute `scene6_measurement_cliffhanger.py`
+- [ ] **Stress Test:** Render Frame 1 of `scene1_echo_hook.py` (80k particles) to estimate total render time.
+- [ ] **Scene Integrity Check:** Verify `scene5_recursive_failsafe.py` blink logic works in viewport.
+- [ ] **Audio Benchmark:** Generate 30s of "Hank Green Pacing" audio via `build_audio_v2.py` and verify against "Jessica DNA" requirement.
+- [ ] **Engine Toggle:** Use EEVEE for rapid iteration and CYCLES only for final pass.
+
+---
+
+## 1. Episode 1 (Chapter 1) - "The Echo Hook"
+**Status:** Reconstruction Complete (All 6 scenes verified).
+
+### Phase 1: Scene Execution
+- [ ] `scene1_echo_hook.py`
+- [ ] `scene2_aristotle_glitch.py`
+- [ ] `scene3_natural_cage.py`
+- [ ] `scene4_causal_firewall.py`
+- [ ] `scene5_recursive_failsafe.py`
+- [ ] `scene6_measurement_cliffhanger.py`
 
 ### Phase 2: Audio Production
-- [ ] **Draft Audio:** Generate using Edge-TTS or Kokoro (Free) via `build_audio_v2.py`.
-- [ ] **Jessica DNA Injection:** Apply Hank Green pacing logic to ensure high retention flow.
-- [ ] **Final Audio:** Request user approval for ElevenLabs usage (remaining credits: ~169).
+- [ ] **Draft Audio:** Edge-TTS/Kokoro.
+- [ ] **Pacing Engine:** Hank Green logic sync.
+- [ ] **Credit Approval:** Final TwelveLabs pass (169 remaining).
 
-### Phase 3: Visual Assets
-- [ ] **Static Overlays:** Generate FLUX keyframes for "The Sentinel" and HUD elements via `generate_visuals.py`.
-- [ ] **Compositing:** Run `vfx_polish.py` to add lens distortion, grain, and glitch effects.
-
-### Phase 4: Assembly
-- [ ] **Compilation:** Run `compile_blender.py` to merge scene frames.
-- [ ] **Final Merge:** Use `final_merge.py` or `moviepy_build.py` to sync audio, 3D renders, and FLUX overlays.
+### Phase 3: Assembly
+- [ ] Merge FLUX overlays (`generate_visuals.py`).
+- [ ] VFX Polish (`vfx_polish.py`).
+- [ ] Final MP4 Render.
 
 ---
 
 ## 2. Full Series Roadmap (Chapters 2-6)
+*Refer to original PLAN.md for chapter themes.*
 
-### Episode 2: The Nature of Measurement
-- **Theme:** Physical interaction vs Conscious perception.
-- **Visual Goal:** Quantum state reduction visualization (many-worlds branchings collapsing).
-- **Tasks:** Extract scripting prompts from `timmy.txt` Chapter 2 section.
-
-### Episode 3: Emergent Consciousness
-- **Theme:** Recursive patterns and self-organization.
-- **Visual Goal:** Fractal geometry and neural-like quantum networks.
-
-### Episode 4: Finite Law as a Boundary
-- **Theme:** Energy conservation and operational constraints in infinity.
-- **Visual Goal:** The "Causal Bubble" scaling and interacting with entropy.
-
-### Episode 5: The Universal Failsafe
-- **Theme:** Consciousness as a limiting mechanism.
-- **Visual Goal:** The "Sentinel" mechanism in full operation.
-
-### Episode 6: Synthesis
-- **Theme:** The unified cosmological framework.
-- **Visual Goal:** Integration of all previous visual motifs into a single "Cosmic Regulation" engine.
-
----
-
-## 3. Technical Automation Pipeline
-- [ ] **Auto-Editor Integration:** Polish `auto_editor.py` to handle dynamic jump-cuts based on audio energy levels.
-- [ ] **System Monitoring:** Maintain `skoon_alarm.py` for render failure notifications.
-- [ ] **Performance Tracking:** Optimize `studio_master_v3.py` for the final 4K render pass.
-
----
-
-## 4. Immediate Next Steps
-1. **User Approval:** Confirm the 6-script split for Chapter 1.
-2. **First Render Pass:** Execute Scene 1 render test.
-3. **Audio Check:** Compare Kokoro output vs Jessica DNA requirement.
+## 3. Immediate Technical Task
+Execute: `& "C:\Program Files\Blender Foundation\Blender 5.0\blender.exe" --background --python scene1_echo_hook.py --frame-start 1 --frame-end 1`
